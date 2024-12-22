@@ -1,0 +1,9 @@
+le champ est 4 il se trouve dans le datz.h (couleur)
+
+la fonction recherchehv elle se trouve dans libserhv. 
+Elle ouvre le fichier et quand elle trouce la reference 
+du vehicule qu'elle veut retourne ça postion
+
+ce qu'il faut faire c'est executer le fichier admin . Lorsqu'on on appuye su 2 il 
+doit affiche les vehicule. sur 8 il doit quitter sur 7 pour avoir le a propos de 
+4 pour faire une recherche 
