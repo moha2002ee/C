@@ -84,4 +84,9 @@ namespace planning
     setSeatingCapacity(Classroom.seatingCapacity);
     return (*this);
   }
+  bool Classroom::operator<(const Classroom& classroom) const{
+    
+    return id < classroom.id;
+  }
+
 }

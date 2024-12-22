@@ -16,7 +16,7 @@ class Timetable
     set<Classroom> classrooms; 
     set<Professor> professors; 
     set<Group>     groups; 
- 
+ static Timetable instance;
   public:
 
    Timetable()= default;
@@ -42,6 +42,8 @@ class Timetable
    Group findGroupById(int id) const; 
    void deleteGroupByIndex(int index); 
    void deleteGroupById(int id); 
+
+      static Timetable& getInstance();
 }; 
 
 

@@ -1,72 +1,63 @@
 #include "Professor.h"
-
-ostream &operator<<(ostream &o, const Professor &p)
+namespace planning
 {
-	o << p.toString() << endl;
-	return o;
-}
 
-Professor::Professor() : Schedulable()
-{
-	lastName = "---";
-	firstName = "---";
+  // ---constructeur---
+  Professor::Professor() : Schedulable(){
+    cout << "---Professor: constructeur par defaut" << endl;
+    setLastName("nom");
+    setFirstName("prenom");
+  }
+  Professor::Professor(int id, const string& nom, const string& prenom) : Schedulable(id){
+    cout << "---Professor: constructeur d'initialisation" << endl;
+    
+    setLastName(nom);
+    setFirstName(prenom);
+  }
+  // --- set(xxx) et get(xxx) ---
+  void Professor::setLastName(const string& lName){
+    lastName = lName;
+  }
+  void Professor::setFirstName(const string& fName){
+    firstName = fName;
+  }
+  string Professor::getLastName() const{
+    return lastName;
+  }
+  string Professor::getFirstName() const{
+    return firstName;
+  }
 
-#ifdef DEBUG
-	cout << "appel du constructeur par defaut Professor" << endl;
-#endif
-}
 
-Professor::Professor(int i, const string &ln, const string &fn) : Schedulable(i)
-{
-	setLastName(ln);
-	setFirstName(fn);
+  // ---methode override---
+  string Professor::toString() const {
+    ostringstream oss;
+    oss << lastName << " " << firstName;
+    return oss.str();
+  }
+  string Professor::tuple() const {
+    ostringstream oss;
+    oss << id << ";" << firstName << ";" << lastName ;
+    return oss.str();
+  }
 
-#ifdef DEBUG
-	cout << "appel du constructeur par initialisation Professor" << endl;
-#endif
-}
 
-/*SETTER*/
-void Professor::setLastName(const string &ln)
-{
-	lastName = ln;
-}
+  //--- operateurs---
+  ostream& operator<<(ostream& o, const Professor& p)
+  {
+     o << p.toString();
+    return o;
+  }
+  Professor& Professor::operator=(const Professor& prof){
+    setId(prof.id);
+    setLastName(prof.lastName);
+    setFirstName(prof.firstName);
+    return (*this);
+  }
 
-void Professor::setFirstName(const string &fn)
-{
-	firstName = fn;
-}
+  bool Professor::operator<(const Professor& prof) const
+  {
+    return (getLastName() < prof.getLastName());
+  } 
 
-/*GETTER*/
-string Professor::getLastName()
-{
-	return lastName;
-}
-
-string Professor::getFirstName()
-{
-	return firstName;
-}
-
-/*METHODE*/
-string Professor::toString() const
-{
-	ostringstream oss;
-	oss << firstName << " " << lastName;
-	return oss.str();
-}
-
-string Professor::tuple() const
-{
-	ostringstream oss;
-	oss << id << ";" << firstName << ";" << lastName;
-	return oss.str();
-}
-
-Professor &Professor::operator=(const Professor &p)
-{
-	setId(p.id);
-	setLastName(p.lastName);
-	setFirstName(p.firstName);
-	return (*this);
 }

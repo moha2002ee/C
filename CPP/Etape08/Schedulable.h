@@ -1,36 +1,27 @@
-#ifndef SCHEDULABLE
-#define SCHEDULABLE
-
-#include <sstream> 
-#include <stdlib.h>
+#ifndef SCHEDULABLE_H
+#define SCHEDULABLE_H
 #include <iostream>
-#include <string.h>
+#include <sstream>
+#include <stdio.h>
 using namespace std;
+namespace planning
+{
+  class Schedulable
+  {
+  protected:
+    int id;
+  public:
+    static int currentId;
 
-class Schedulable	{
+    Schedulable();
+    Schedulable(int id);
+    Schedulable(const Schedulable& schedule) = default;
+    virtual ~Schedulable() = default;
+    void setId(int id);
+    int getId() const;
+    virtual string toString() const = 0;
+    virtual string tuple() const = 0;
+  };
 
-protected:
-	int id;  //id du schedulable
-
-public:
-	/*CONSTRUCTEUR*/
-	Schedulable();
-	Schedulable(int i);
-	Schedulable(const Schedulable &s) = default;
-
-	/*DESTRUCTEUR*/
-	virtual ~Schedulable() = default; 
-
-	/*SETTER*/
-	void setId(int i);
-
-	/*GETTER*/
-	int getId() const;
-
-	/*METHODE*/
-	virtual string toString() const = 0;  //Méthode virtuelle pure
-	virtual string tuple() const = 0;
-};
-
-
+}
 #endif

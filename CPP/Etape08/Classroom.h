@@ -28,7 +28,7 @@ namespace planning
     string tuple() const override;
 
     Classroom& operator=(const Classroom& classroom);
-
+    bool operator<(const Classroom& classroom) const;
   };
 }
 #endif

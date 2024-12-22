@@ -1,39 +1,34 @@
-#ifndef PROFESSOR
-#define PROFESSOR
-
+#ifndef PROFESSOR_H
+#define PROFESSOR_H
 #include "Schedulable.h"
+namespace planning
+{
+  class Professor : public Schedulable{
 
-class Professor : public Schedulable {
+    friend ostream& operator<<(ostream& o, const Professor& p);
 
-friend ostream& operator<<(ostream& o, const Professor& p);
+  private:
+    string lastName;
+    string firstName;
 
+  public:
+    Professor();
+    Professor(int, const string&, const string&);
+    Professor(const Professor& prof) = default;
+    ~Professor() = default;
 
-private:
-	string lastName;
-	string firstName;
+    void setLastName(const string& lName);
+    void setFirstName(const string& fName);
+    string getLastName() const;
+    string getFirstName() const;
 
-public:
-	/*CONSTRUCTEUR*/
-	Professor();
-	Professor(int i, const string &ln, const string &fn);
-	Professor(const Professor &p) = default;
+    string toString() const override;
+    string tuple() const override;
 
-	/*DESTRUCTEUR*/
-	~Professor() = default;
+    Professor& operator=(const Professor& prof);
+    bool operator<(const Professor& prof) const; 
 
-	/*SETTER*/
-	void setLastName(const string &ln);
-	void setFirstName(const string &fn);
+  };
+}
 
-	/*GETTER*/
-	string getLastName();
-	string getFirstName();
-
-	/*METHODE*/
-	string toString() const override;  //Méthode surchargé
-	string tuple() const override;
-
-	/*OPERATEUR*/
-	Professor& operator=(const Professor &p);
-};
 #endif

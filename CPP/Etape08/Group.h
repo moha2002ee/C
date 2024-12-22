@@ -1,30 +1,30 @@
-#include <string>
-#include <sstream>
-#include <ostream>  
+#ifndef GROUP_H
+#define GROUP_H
 #include "Schedulable.h"
-
-using namespace std;
-
-class Group : public Schedulable
+namespace planning
 {
+  class Group : public Schedulable{
+
     friend ostream& operator<<(ostream& o, const Group& g);
 
-private:
+  private:
     string name;
 
-public:
+  public:
     Group();
-    Group(int i, string n);
-    Group(const Group &g) = default;
-
+    Group(int, const string&);
+    Group(const Group& group) = default;
     ~Group() = default;
 
-    void setName(string n);
-
+    void setName(const string& name);
     string getName() const;
 
     string toString() const override;
     string tuple() const override;
 
-    Group &operator=(const Group &g);
-};
+    Group& operator=(const Group& group);
+    bool operator<(const Group& group) const;
+
+  };
+}
+#endif
