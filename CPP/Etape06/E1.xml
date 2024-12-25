@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Event>
+<code>
+17
+</code>
+<title>
+Labo C++
+</title>
+<timing>
+<Timing>
+<day>
+Mardi
+</day>
+<start>
+<Time>
+<hour>
+10
+</hour>
+<minute>
+30
+</minute>
+</Time>
+</start>
+<duration>
+<Time>
+<hour>
+2
+</hour>
+<minute>
+0
+</minute>
+</Time>
+</duration>
+</Timing>
+</timing>
+</Event>
