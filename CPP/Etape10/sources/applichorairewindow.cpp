@@ -611,9 +611,7 @@ void ApplicHoraireWindow::on_pushButtonSupprimerLocal_clicked() {
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void ApplicHoraireWindow::on_pushButtonPlanifier_clicked()
 {
-    cout << "Clic sur bouton Planifier" << endl;
-    // TO DO (Etape 11)
-
+    
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -638,8 +636,12 @@ void ApplicHoraireWindow::on_actionOuvrir_triggered()
 {
     cout << "Clic sur Menu--> Item Ouvrir" << endl;
     string aRechercher;
+    
 
     aRechercher = dialogInputText("Ouvrir un horaire","Quelle horaire souhaiter vous ouvrir ?");
+    clearTableProfessors();
+    clearTableClassrooms();
+    clearTableGroups();
     Timetable::getInstance().load(aRechercher);
     updateAllTables();
 }
@@ -657,10 +659,7 @@ void ApplicHoraireWindow::on_actionNouveau_triggered()
         
     } 
     clearTableProfessors();
-    for (auto it = tmp1.cbegin(); it != tmp1.cend(); ++it)
-    {
-        addTupleTableProfessors(it->tuple());
-    }
+    
 
     auto tmp2 = Timetable::getInstance().getClassrooms();
 
@@ -670,10 +669,7 @@ void ApplicHoraireWindow::on_actionNouveau_triggered()
         
     } 
     clearTableClassrooms();
-    for (auto it = tmp2.cbegin(); it != tmp2.cend(); ++it)
-    {
-        addTupleTableClassrooms(it->tuple());
-    }
+    
 
     auto tmp3 = Timetable::getInstance().getGroups();
 
@@ -683,17 +679,13 @@ void ApplicHoraireWindow::on_actionNouveau_triggered()
         
     } 
     clearTableGroups();
-    for (auto it = tmp3.cbegin(); it != tmp3.cend(); ++it)
-    {
-        addTupleTableGroups(it->tuple());
-    } 
-    clearTableProfessors();
-    clearTableGroups();
-    clearTableClassrooms();
+    
+
+
+    
 
     Schedulable::currentId = 1;
 
-    // updateAllTables();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -755,6 +747,7 @@ void ApplicHoraireWindow::on_actionSupprimerCours_triggered()
 {
     cout << "Clic sur Menu Supprimer --> Item Cours" << endl;
     // TO DO (Etape 11)
+
 
 }
 
@@ -841,4 +834,7 @@ void ApplicHoraireWindow::updateAllTables()
     }
  
     ui->lineEditNomLocal->clear();
+
+
+
 }

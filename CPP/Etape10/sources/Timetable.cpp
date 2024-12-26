@@ -28,13 +28,15 @@ Classroom Timetable::findClassroomByIndex(int index) const{
 }
 Classroom Timetable::findClassroomById(int id) const
 {
-     int currentIndex = 1;
-     for (set<Classroom>::const_iterator it = classrooms.cbegin(); it != classrooms.cend(); it++){
-          if(currentIndex == id) return *it;
-
-          currentIndex++;
+     
+     for (auto it = classrooms.cbegin(); it != classrooms.cend(); ++it)
+     {
+          if(it->getId() == id)
+          {
+               return *it;
+          }
      }
-     throw std::out_of_range("Index hors limites");
+     throw std::out_of_range("Identifiant non trouvé");
 }
 
 void Timetable::deleteClassroomByIndex(int index)
@@ -65,6 +67,8 @@ void Timetable::deleteClassroomById(int id)
      }
      throw std::out_of_range("Identifiant non trouvé");
 }
+
+
 
 int Timetable::addProfessor(const string& lastName,const string& firstName)
 {
@@ -143,6 +147,8 @@ void Timetable::deleteProfessorById(int id)
      throw std::out_of_range("Identificant non trouvé");
 }
 
+
+
 int Timetable::addGroup(const string& name)
 {
      cout << "---Group: constructeur d'initialisation" << endl; 
@@ -194,6 +200,7 @@ Group Timetable::findGroupById(int id) const
 void Timetable::deleteGroupByIndex(int index)
 {
      int currentIndex = 0;
+
      for (auto it = groups.begin(); it != groups.end(); ++it)
      {
           if (currentIndex == index)
@@ -221,6 +228,7 @@ void Timetable::deleteGroupById(int id)
 }
 
 
+
 Timetable& Timetable::getInstance()
 {
      return instance;
@@ -242,22 +250,24 @@ set<Group> Timetable::getGroups() const
      return groups;
 } 
 
+
 void Timetable::save(const string& timetableName)
 {
-     int tmp = Schedulable::currentId;
+     int id = Schedulable::currentId;
+
      string NomFichier;
      NomFichier = timetableName + "_config.dat";
      ofstream fichier(NomFichier, ios::binary);
      if (!fichier)
-     {    
+     {
           std::cerr << "Erreur d'ouverture du fichier...\n";
           return;
      }
-     fichier.write((char*)&tmp, sizeof(int));
+     fichier.write((char*)&id, sizeof(int));
      fichier.flush();
      fichier.close();
-     cout  << "currentId : " << tmp << endl;
 
+     cout  << "currentId : " << id << endl;
 
      NomFichier = timetableName + "_professors.xml";
      XmlFileSerializer<Professor> professorSerializer(NomFichier,XmlFileSerializer<Professor>::WRITE,"_professors");
@@ -265,18 +275,22 @@ void Timetable::save(const string& timetableName)
      {
        professorSerializer.write(*it);
      }
+
      NomFichier = timetableName + "_groups.xml";
      XmlFileSerializer<Group> groupSerializer(NomFichier,XmlFileSerializer<Group>::WRITE,"_groups");
      for (auto it = groups.cbegin(); it != groups.cend(); ++it)
      {
        groupSerializer.write(*it);
      }
+
      NomFichier = timetableName + "_classrooms.xml";
      XmlFileSerializer<Classroom> classroomSerializer(NomFichier,XmlFileSerializer<Classroom>::WRITE,"_classrooms");
      for (auto it = classrooms.cbegin(); it != classrooms.cend(); ++it)
      {
        classroomSerializer.write(*it);
      }
+
+     
 }
 
 void Timetable::load(const string& timetableName)
@@ -286,6 +300,7 @@ void Timetable::load(const string& timetableName)
      string fichierProfessors = timetableName + "_professors.xml";
      string fichierGroups = timetableName + "_groups.xml";
      string fichierClassrooms= timetableName + "_classrooms.xml";
+     string fichierCourses = timetableName + "_courses.xml";
      ifstream fichier(fichierConfig, ios::binary);
      if (!fichier)
      {    
@@ -293,15 +308,14 @@ void Timetable::load(const string& timetableName)
           return;
      }
      fichier.read((char*)&Schedulable::currentId, sizeof(int));
+
      cout  << "currentId : " << Schedulable::currentId << endl;
+
 
      classrooms.clear();
      professors.clear();
      groups.clear();
-
      XmlFileSerializer<Professor> professorSerializer(fichierProfessors,XmlFileSerializer<Professor>::READ);
-     
-    
      cout << "Debut de lecture..." << endl;
 
      end = false;
@@ -315,7 +329,8 @@ void Timetable::load(const string& timetableName)
                { 
                     end = true;
                     cout << "Fin de fichier atteinte." << endl;
-               }else
+               }
+               else
                {
                     cout << "Erreur : " << e.getMessage() << " (code = " << e.getCode() << ")" << endl;
                }
@@ -338,7 +353,8 @@ void Timetable::load(const string& timetableName)
                { 
                     end = true;
                     cout << "Fin de fichier atteinte." << endl;
-               }else
+               }
+               else
                {
                     cout << "Erreur : " << e.getMessage() << " (code = " << e.getCode() << ")" << endl;
                }
@@ -361,7 +377,8 @@ void Timetable::load(const string& timetableName)
                { 
                     end = true;
                     cout << "Fin de fichier atteinte." << endl;
-               }else
+               }
+               else
                {
                     cout << "Erreur : " << e.getMessage() << " (code = " << e.getCode() << ")" << endl;
                }
@@ -369,7 +386,6 @@ void Timetable::load(const string& timetableName)
 
      }
      cout << "Fin de lecture." << endl;
-    
-
 
 } 
+

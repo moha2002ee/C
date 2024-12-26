@@ -10,11 +10,10 @@ namespace planning
         #ifdef DEBUG
         cout << ">>> Event : constructeur par defaut <<<" << endl;
         #endif
-        code = 1;
+        code = 0;
         title = nullptr;
         timing = nullptr;
         setTitle("---");
-        currentCode++;
 
     }
     Event::Event(int c, const char* t)
@@ -26,7 +25,6 @@ namespace planning
         title = nullptr;
         timing = nullptr;
         setTitle(t);
-        currentCode++;
 
         
     }
@@ -40,7 +38,6 @@ namespace planning
         timing = nullptr;
         setTitle(e.getTitle());
         setTiming(e.getTiming());
-        currentCode++;
 
     }
 
@@ -52,7 +49,6 @@ namespace planning
         #endif
         if (title) delete title;
         if (timing) delete timing;
-        currentCode--;
     }
 
     // ***** getXXX / setXXX *****

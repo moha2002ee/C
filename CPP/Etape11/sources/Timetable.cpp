@@ -2,46 +2,41 @@
 
 Timetable Timetable::instance;
 
-int Timetable::addClassroom(const string &name, int seatingCapacity)
-{
-     cout << "---Classroom: constructeur d'initialisation" << endl;
+int Timetable::addClassroom(const string& name,int seatingCapacity){
+     cout << "---Classroom: constructeur d'initialisation" << endl; 
 
      classrooms.insert(Classroom(Schedulable::currentId, name, seatingCapacity));
      Schedulable::currentId++;
      return classrooms.size();
-}
-void Timetable::displayClassrooms() const
-{
+} 
+void Timetable::displayClassrooms() const{
      cout << "contenu classrooms: " << endl;
 
-     for (set<Classroom>::const_iterator it = classrooms.cbegin(); it != classrooms.cend(); it++)
-     {
+     for (set<Classroom>::const_iterator it = classrooms.cbegin(); it != classrooms.cend(); it++){
           cout << it->toString() << endl;
      }
 }
-Classroom Timetable::findClassroomByIndex(int index) const
-{
+Classroom Timetable::findClassroomByIndex(int index) const{
      int currentIndex = 0;
-     for (set<Classroom>::const_iterator it = classrooms.cbegin(); it != classrooms.cend(); it++)
-     {
-          if (currentIndex == index)
-               return *it;
+     for (set<Classroom>::const_iterator it = classrooms.cbegin(); it != classrooms.cend(); it++){
+          if(currentIndex == index) return *it;
 
           currentIndex++;
      }
      throw std::out_of_range("Index hors limites");
+
 }
 Classroom Timetable::findClassroomById(int id) const
 {
-     int currentIndex = 1;
-     for (set<Classroom>::const_iterator it = classrooms.cbegin(); it != classrooms.cend(); it++)
+     
+     for (auto it = classrooms.cbegin(); it != classrooms.cend(); ++it)
      {
-          if (currentIndex == id)
+          if(it->getId() == id)
+          {
                return *it;
-
-          currentIndex++;
+          }
      }
-     throw std::out_of_range("Index hors limites");
+     throw std::out_of_range("Identifiant non trouvé");
 }
 
 void Timetable::deleteClassroomByIndex(int index)
@@ -49,7 +44,7 @@ void Timetable::deleteClassroomByIndex(int index)
      int currentIndex = 0;
      for (auto it = classrooms.begin(); it != classrooms.end(); ++it)
      {
-          if (currentIndex == index)
+          if(currentIndex == index)
           {
                classrooms.erase(it);
                return;
@@ -64,7 +59,7 @@ void Timetable::deleteClassroomById(int id)
 {
      for (auto it = classrooms.begin(); it != classrooms.end(); ++it)
      {
-          if (it->getId() == id)
+          if(it->getId() == id)
           {
                classrooms.erase(it);
                return;
@@ -73,14 +68,27 @@ void Timetable::deleteClassroomById(int id)
      throw std::out_of_range("Identifiant non trouvé");
 }
 
-int Timetable::addProfessor(const string &lastName, const string &firstName)
+bool Timetable::isClassroomAvailable(int id, const Timing& timing)
 {
-     cout << "---Professor: constructeur d'initialisation" << endl;
+     for (auto it = courses.begin(); it != courses.end(); it++)
+     {
+          if (it->getClassroomId() == id && it->getTiming().intersect(timing))
+          {
+           return false;
+          }
+     }
+     return true;
+}
+
+int Timetable::addProfessor(const string& lastName,const string& firstName)
+{
+     cout << "---Professor: constructeur d'initialisation" << endl; 
 
      professors.insert(Professor(Schedulable::currentId, lastName, firstName));
 
      ++Schedulable::currentId;
      return professors.size();
+
 }
 
 void Timetable::displayProfessors() const
@@ -90,7 +98,7 @@ void Timetable::displayProfessors() const
      for (auto it = professors.cbegin(); it != professors.cend(); ++it)
      {
           cout << it->toString() << endl;
-     }
+     } 
 }
 
 Professor Timetable::findProfessorByIndex(int index) const
@@ -98,7 +106,7 @@ Professor Timetable::findProfessorByIndex(int index) const
      int currentIndex = 0;
      for (auto it = professors.cbegin(); it != professors.cend(); ++it)
      {
-          if (currentIndex == index)
+          if(currentIndex == index)
           {
                return *it;
           }
@@ -112,7 +120,7 @@ Professor Timetable::findProfessorById(int id) const
 {
      for (auto it = professors.cbegin(); it != professors.cend(); ++it)
      {
-          if (it->getId() == id)
+          if(it->getId() == id)
           {
                return *it;
           }
@@ -149,9 +157,21 @@ void Timetable::deleteProfessorById(int id)
      throw std::out_of_range("Identificant non trouvé");
 }
 
-int Timetable::addGroup(const string &name)
+bool Timetable::isProfessorAvailable(int id, const Timing& timing)
 {
-     cout << "---Group: constructeur d'initialisation" << endl;
+     for (auto it = courses.begin(); it != courses.end(); it++)
+     {
+          if (it->getProfessorId() == id && it->getTiming().intersect(timing))
+          {
+           return false;
+          }
+     }
+     return true;
+}
+
+int Timetable::addGroup(const string& name)
+{
+     cout << "---Group: constructeur d'initialisation" << endl; 
 
      groups.insert(Group(Schedulable::currentId, name));
 
@@ -161,19 +181,19 @@ int Timetable::addGroup(const string &name)
 
 void Timetable::displayGroups() const
 {
-     cout << "contenu groups: " << endl;
+    cout << "contenu groups: " << endl;
 
      for (auto it = groups.cbegin(); it != groups.cend(); ++it)
      {
           cout << it->toString() << endl;
-     }
+     }  
 }
 
 Group Timetable::findGroupByIndex(int index) const
 {
      int currentIndex = 0;
 
-     for (auto it = groups.cbegin(); it != groups.cend(); ++it)
+     for (auto it = groups.cbegin() ; it != groups.cend(); ++it)
      {
           if (currentIndex == index)
           {
@@ -187,7 +207,7 @@ Group Timetable::findGroupByIndex(int index) const
 
 Group Timetable::findGroupById(int id) const
 {
-     for (auto it = groups.cbegin(); it != groups.cend(); ++it)
+     for (auto it = groups.cbegin() ; it != groups.cend(); ++it)
      {
           if (it->getId() == id)
           {
@@ -200,6 +220,7 @@ Group Timetable::findGroupById(int id) const
 void Timetable::deleteGroupByIndex(int index)
 {
      int currentIndex = 0;
+
      for (auto it = groups.begin(); it != groups.end(); ++it)
      {
           if (currentIndex == index)
@@ -226,18 +247,67 @@ void Timetable::deleteGroupById(int id)
      throw std::out_of_range("Identificant non trouvé");
 }
 
-Timetable &Timetable::getInstance()
+bool Timetable::isGroupAvailable(int id, const Timing& timing)
+{
+     if (courses.empty())
+     {
+        cout << "Aucun cours dans la liste." << endl;
+        return true; // Si aucun cours, le groupe est disponible
+     }
+
+     for (auto it = courses.cbegin(); it != courses.cend(); ++it)
+     {
+          cout << "id prof :" << it->getProfessorId() << endl;
+          cout << "id local :" << it->getClassroomId() << endl;
+
+          const auto& groupIds = it->getGroupsIds();
+          if (groupIds.empty())
+          {
+            cout << "Aucun groupe associé à ce cours." << endl;
+            continue; // Passer au prochain cours
+          }
+
+          for (auto groupId = groupIds.cbegin(); groupId != groupIds.cend(); ++groupId)
+          {
+               
+               cout << "id groupe :" << *groupId << endl;
+
+               if (*groupId == id && it->getTiming().intersect(timing))
+               {
+                cout << "Conflit détecté pour le groupe " << id << " avec l'horaire donné." << endl;
+                return false;
+               }
+          }
+     }
+
+    return true; 
+}
+
+void Timetable::deleteCourseById(int code)
+{
+   for (auto it = courses.begin(); it != courses.end(); ++it)
+     {
+          if (it->getCode() == code)
+          {
+               courses.erase(it);
+               return;
+          }
+     }
+     throw std::out_of_range("Identificant non trouvé");
+}
+
+
+Timetable& Timetable::getInstance()
 {
      return instance;
 }
+
 
 set<Classroom> Timetable::getClassrooms() const
 {
      return classrooms;
 }
-set <Course> Timetable::getCourse()const {
-     return courses;
-}
+
 set<Professor> Timetable::getProfessors() const
 {
      return professors;
@@ -246,11 +316,17 @@ set<Professor> Timetable::getProfessors() const
 set<Group> Timetable::getGroups() const
 {
      return groups;
-}
-
-void Timetable::save(const string &timetableName)
+} 
+list<Course> Timetable::getCourses()  const
 {
-     int tmp = Schedulable::currentId;
+     return courses;
+} 
+
+void Timetable::save(const string& timetableName)
+{
+     int id = Schedulable::currentId;
+     int code = Event::currentCode;
+
      string NomFichier;
      NomFichier = timetableName + "_config.dat";
      ofstream fichier(NomFichier, ios::binary);
@@ -259,66 +335,81 @@ void Timetable::save(const string &timetableName)
           std::cerr << "Erreur d'ouverture du fichier...\n";
           return;
      }
-     fichier.write((char *)&tmp, sizeof(int));
+     fichier.write((char*)&id, sizeof(int));
+     fichier.write((char*)&code, sizeof(int));
      fichier.flush();
      fichier.close();
-     cout << "currentId : " << tmp << endl;
+
+     cout  << "currentId : " << id << endl;
+     cout  << "currentCode : " << code << endl;
 
      NomFichier = timetableName + "_professors.xml";
-     XmlFileSerializer<Professor> professorSerializer(NomFichier, XmlFileSerializer<Professor>::WRITE, "_professors");
+     XmlFileSerializer<Professor> professorSerializer(NomFichier,XmlFileSerializer<Professor>::WRITE,"_professors");
      for (auto it = professors.cbegin(); it != professors.cend(); ++it)
      {
-          professorSerializer.write(*it);
+       professorSerializer.write(*it);
      }
+
      NomFichier = timetableName + "_groups.xml";
-     XmlFileSerializer<Group> groupSerializer(NomFichier, XmlFileSerializer<Group>::WRITE, "_groups");
+     XmlFileSerializer<Group> groupSerializer(NomFichier,XmlFileSerializer<Group>::WRITE,"_groups");
      for (auto it = groups.cbegin(); it != groups.cend(); ++it)
      {
-          groupSerializer.write(*it);
+       groupSerializer.write(*it);
      }
+
      NomFichier = timetableName + "_classrooms.xml";
-     XmlFileSerializer<Classroom> classroomSerializer(NomFichier, XmlFileSerializer<Classroom>::WRITE, "_classrooms");
+     XmlFileSerializer<Classroom> classroomSerializer(NomFichier,XmlFileSerializer<Classroom>::WRITE,"_classrooms");
      for (auto it = classrooms.cbegin(); it != classrooms.cend(); ++it)
      {
-          classroomSerializer.write(*it);
+       classroomSerializer.write(*it);
      }
+
+     NomFichier = timetableName + "_courses.xml";
+     XmlFileSerializer<Course> courseSerializer(NomFichier,XmlFileSerializer<Course>::WRITE,"_courses");
+     for (auto it = courses.begin(); it != courses.end(); it++)
+     {
+          courseSerializer.write(*it);
+               
+     }
+     
 }
 
-void Timetable::load(const string &timetableName)
+void Timetable::load(const string& timetableName)
 {
      bool end;
      string fichierConfig = timetableName + "_config.dat";
      string fichierProfessors = timetableName + "_professors.xml";
      string fichierGroups = timetableName + "_groups.xml";
-     string fichierClassrooms = timetableName + "_classrooms.xml";
+     string fichierClassrooms= timetableName + "_classrooms.xml";
+     string fichierCourses = timetableName + "_courses.xml";
      ifstream fichier(fichierConfig, ios::binary);
      if (!fichier)
-     {
+     {    
           std::cerr << "Erreur d'ouverture du fichier...\n";
           return;
      }
-     fichier.read((char *)&Schedulable::currentId, sizeof(int));
-     cout << "currentId : " << Schedulable::currentId << endl;
+     fichier.read((char*)&Schedulable::currentId, sizeof(int));
+     fichier.read((char*)&Event::currentCode, sizeof(int));
+
+     cout  << "currentId : " << Schedulable::currentId << endl;
+     cout  << "currentCode : " << Event::currentCode << endl;
 
      classrooms.clear();
      professors.clear();
      groups.clear();
-
-     XmlFileSerializer<Professor> professorSerializer(fichierProfessors, XmlFileSerializer<Professor>::READ);
-
+     courses.clear();
+     XmlFileSerializer<Professor> professorSerializer(fichierProfessors,XmlFileSerializer<Professor>::READ);
      cout << "Debut de lecture..." << endl;
 
      end = false;
-     while (!end)
+     while(!end)
      {
           try
           {
                professors.insert(professorSerializer.read());
-          }
-          catch (const XmlFileSerializerException &e)
-          {
+          }catch(const XmlFileSerializerException& e){
                if (e.getCode() == XmlFileSerializerException::END_OF_FILE)
-               {
+               { 
                     end = true;
                     cout << "Fin de fichier atteinte." << endl;
                }
@@ -327,23 +418,22 @@ void Timetable::load(const string &timetableName)
                     cout << "Erreur : " << e.getMessage() << " (code = " << e.getCode() << ")" << endl;
                }
           }
+
      }
      cout << "Fin de lecture." << endl;
 
-     XmlFileSerializer<Group> groupSerializer(fichierGroups, XmlFileSerializer<Group>::READ, "_groups");
+     XmlFileSerializer<Group> groupSerializer(fichierGroups,XmlFileSerializer<Group>::READ,"_groups");
      cout << "Debut de lecture..." << endl;
 
      end = false;
-     while (!end)
+     while(!end)
      {
           try
           {
                groups.insert(groupSerializer.read());
-          }
-          catch (const XmlFileSerializerException &e)
-          {
+          }catch(const XmlFileSerializerException& e){
                if (e.getCode() == XmlFileSerializerException::END_OF_FILE)
-               {
+               { 
                     end = true;
                     cout << "Fin de fichier atteinte." << endl;
                }
@@ -352,23 +442,22 @@ void Timetable::load(const string &timetableName)
                     cout << "Erreur : " << e.getMessage() << " (code = " << e.getCode() << ")" << endl;
                }
           }
+
      }
      cout << "Fin de lecture." << endl;
-
-     XmlFileSerializer<Classroom> classroomSerializer(fichierClassrooms, XmlFileSerializer<Classroom>::READ, "_classrooms");
+    
+     XmlFileSerializer<Classroom> classroomSerializer(fichierClassrooms,XmlFileSerializer<Classroom>::READ,"_classrooms");
      cout << "Debut de lecture..." << endl;
 
      end = false;
-     while (!end)
+     while(!end)
      {
           try
           {
                classrooms.insert(classroomSerializer.read());
-          }
-          catch (const XmlFileSerializerException &e)
-          {
+          }catch(const XmlFileSerializerException& e){
                if (e.getCode() == XmlFileSerializerException::END_OF_FILE)
-               {
+               { 
                     end = true;
                     cout << "Fin de fichier atteinte." << endl;
                }
@@ -377,70 +466,105 @@ void Timetable::load(const string &timetableName)
                     cout << "Erreur : " << e.getMessage() << " (code = " << e.getCode() << ")" << endl;
                }
           }
+
      }
      cout << "Fin de lecture." << endl;
-}
-bool isProfessorAvailable(int id, const Timing &timing)
-{
-     for (const auto &course : courses)
+    
+     XmlFileSerializer<Course> courseSerializer(fichierCourses,XmlFileSerializer<Course>::READ,"_courses");
+     cout << "Debut de lecture..." << endl;
+
+     end = false;
+     while(!end)
      {
-          if (course.professorId == id && course.timing && course.timing->intersect(timing))
+          try
           {
-               return false;
+               courses.push_back(courseSerializer.read());
+               
+          }catch(const XmlFileSerializerException& e){
+               if (e.getCode() == XmlFileSerializerException::END_OF_FILE)
+               { 
+                    end = true;
+                    cout << "Fin de fichier atteinte." << endl;
+               }
+               else
+               {
+                    cout << "Erreur : " << e.getMessage() << " (code = " << e.getCode() << ")" << endl;
+               }
           }
+
      }
-     return true;
-}
-bool isGroupAvailable(int id, const Timing &timing)
+     cout << "Fin de lecture." << endl;
+
+} 
+
+
+void Timetable::schedule(Course& c, const Timing& t)
 {
-   const std::set<Course>& courses = getCourse();
+     cout << "isProfessorAvailable" << endl;
+     if(!isProfessorAvailable(c.getProfessorId(), t))
+          throw TimingException("---professeur pas disponible---", TimingException::NO_TIMING);
+     cout << "isClassroomAvailable" << endl;
 
-    // Parcourt les cours pour vérifier les conflits
-    for (const auto& course : courses) 
-    {
-        // Vérifie si le groupe est présent dans le cours et si les timings se chevauchent
-        if (course.isGroupIdPresent(id) && course.timing != nullptr && course.timing->intersect(timing)) 
-        {
-            return false; // Le groupe est occupé (conflit trouvé)
-        }
-    }
-    return true; // Le groupe est disponible si aucun conflit n'est détecté
-}
+     if(!isClassroomAvailable(c.getClassroomId(), t))
+          throw TimingException("---local pas disponible---", TimingException::NO_TIMING);
+     cout << "isGroupAvailable" << endl;
 
-bool isClassroomAvailable(int id, const Timing &timing)
-{
-     for (const auto &course : courses)
-     {
-          if (course.classroomId == id && course.timing && course.timing->intersect(timing))
-          {
-               return false;
-          }
-     }
-     return true;
-}
-
-void schedule(Course &c, const Timing &t)
-{
-     if (!isProfessorAvailable(c.getProfessorId(), t))
-     {
-          throw TimingException("Le professeur n'est pas disponible.",TimingException::NO_PROF);
-     }
-
-     if (!isClassroomAvailable(c.getClassroomId(), t))
-     {
-          throw TimingException("Le local n'est pas disponible.",TimingException::NO_LOCAL);
-     }
-
-     for (int groupId : c.getGroupsIds())
+     for (auto groupId : c.getGroupsIds())
      {
           if (!isGroupAvailable(groupId, t))
           {
-               throw TimingException("Un des groupes n'est pas disponible.",TimingException::NO_GROUP);
+               throw TimingException("---groupe pas disponible---", TimingException::NO_TIMING);
           }
      }
+     c.setCode(Event::currentCode);
+     Event::currentCode++;
+     cout << "currentCode : " << Event::currentCode << endl;
 
-    
+     c.setTiming(t);
+
+     courses.push_back(c);
+     cout << "ajout course fait "<< endl;
 }
-    void addCourse(Course& c) {
-        courses.insert(c); 
-    }
+
+string Timetable::tuple(const Course& c)
+{
+     cout << "entre dans la boucle de courses "<< endl;
+     for(auto it = courses.cbegin(); it != courses.cend(); ++it)
+     {
+          if (it->getCode() == c.getCode())
+          {      
+               cout << "a trouve le cours avec le code correspondant "<< endl;
+
+               string tmp;
+
+               tmp += to_string(it->getCode()) + ";";
+
+               tmp += it->getTiming().getDay() + ";";
+
+               tmp += it->getTiming().getStart().toString()  + ";";
+
+               tmp += it->getTiming().getDuration().toString()  + ";";
+
+               tmp += findClassroomById(c.getClassroomId()).getName() + ";";
+
+               tmp += string(it->getTitle()) + ";";
+
+               tmp += findProfessorById(c.getProfessorId()).toString() + ";";
+
+          
+               for (int groupId : c.getGroupsIds())
+               {
+                    tmp += findGroupById(groupId).toString()+ " ";      
+               }
+              
+
+              return tmp;
+          }
+ 
+          
+     }   
+     throw std::out_of_range("Objet course non trouvé");
+
+     
+
+}

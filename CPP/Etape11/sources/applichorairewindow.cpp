@@ -613,7 +613,67 @@ void ApplicHoraireWindow::on_pushButtonPlanifier_clicked()
 {
     cout << "Clic sur bouton Planifier" << endl;
     // TO DO (Etape 11)
+    int tmpIndexProf = getIndexProfessorSelection();
+    auto tmpIndexGroup = getIndexesGroupsSelection();
+    int tmpIndexClassroom = getIndexClassroomSelection();
+    
+    
+    
+    try
+    {
+        if (tmpIndexProf ==  -1)
+        {
+            dialogError("ERREUR", "Veuillez selectionner un professeur");
+        }
+     
+        else if(tmpIndexGroup.size() == 0)
+        {
+            dialogError("ERREUR", "Veuillez selectionner un ou plusieur groupes");
+        }
+     
+        else if (tmpIndexClassroom == -1)
+        {
+            dialogError("ERREUR", "Veuillez selectionner une classe");
+        }
+        else
+        {   
+            int idProf = Timetable::getInstance().findProfessorByIndex(tmpIndexProf).getId();
+            int idClass= Timetable::getInstance().findClassroomByIndex(tmpIndexClassroom).getId();
+            set<int> idsGroup;
+            for (auto it = tmpIndexGroup.begin(); it != tmpIndexGroup.end(); it++)
+             {
+                  
+                idsGroup.insert(Timetable::getInstance().findGroupByIndex(*it).getId());
+                  
+                       
+             }
+            Timing scheduledTiming;
+            scheduledTiming.setDay(getDaySelection());
+            scheduledTiming.setStart(Time(getHourStart(), getMinuteStart()));
+            scheduledTiming.setDuration(getDuration());
+            Course scheduledCourse = Course(Event::currentCode, getTitle().c_str(), idProf, idClass, idsGroup);
 
+            cout <<  "code course: " << scheduledCourse.getCode() << endl;
+            cout <<  "code id prof: " << scheduledCourse.getProfessorId() << endl;
+            cout <<  "code id class: " << scheduledCourse.getClassroomId() << endl;
+            cout <<  "code titre: " << scheduledCourse.getTitle() << endl;
+
+
+
+
+            Timetable::getInstance().schedule(scheduledCourse, scheduledTiming);
+            addTupleTableCourses(Timetable::getInstance().tuple(scheduledCourse));
+
+        }
+    }
+    catch(TimingException &e)
+    {
+        cout << e.getMessage() << "\n" << "\nCode Erreur:" << e.getCode();
+    }
+    catch(TimeException &e)
+    {
+        cout << e.getMessage() << "\n" << "Code Erreur:" << e.getCode();
+    }
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -638,8 +698,13 @@ void ApplicHoraireWindow::on_actionOuvrir_triggered()
 {
     cout << "Clic sur Menu--> Item Ouvrir" << endl;
     string aRechercher;
+    
 
     aRechercher = dialogInputText("Ouvrir un horaire","Quelle horaire souhaiter vous ouvrir ?");
+    clearTableProfessors();
+    clearTableClassrooms();
+    clearTableGroups();
+    clearTableCourses();
     Timetable::getInstance().load(aRechercher);
     updateAllTables();
 }
@@ -657,10 +722,7 @@ void ApplicHoraireWindow::on_actionNouveau_triggered()
         
     } 
     clearTableProfessors();
-    for (auto it = tmp1.cbegin(); it != tmp1.cend(); ++it)
-    {
-        addTupleTableProfessors(it->tuple());
-    }
+    
 
     auto tmp2 = Timetable::getInstance().getClassrooms();
 
@@ -670,10 +732,7 @@ void ApplicHoraireWindow::on_actionNouveau_triggered()
         
     } 
     clearTableClassrooms();
-    for (auto it = tmp2.cbegin(); it != tmp2.cend(); ++it)
-    {
-        addTupleTableClassrooms(it->tuple());
-    }
+    
 
     auto tmp3 = Timetable::getInstance().getGroups();
 
@@ -683,17 +742,21 @@ void ApplicHoraireWindow::on_actionNouveau_triggered()
         
     } 
     clearTableGroups();
-    for (auto it = tmp3.cbegin(); it != tmp3.cend(); ++it)
+    
+
+    auto tmp4 = Timetable::getInstance().getCourses();
+
+    for (auto it = tmp4.cbegin(); it != tmp4.cend(); ++it)
     {
-        addTupleTableGroups(it->tuple());
+        Timetable::getInstance().deleteCourseById(it->getCode());
+        
     } 
-    clearTableProfessors();
-    clearTableGroups();
-    clearTableClassrooms();
+    clearTableCourses();
+    
 
     Schedulable::currentId = 1;
+    Event::currentCode = 1;
 
-    // updateAllTables();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -755,6 +818,14 @@ void ApplicHoraireWindow::on_actionSupprimerCours_triggered()
 {
     cout << "Clic sur Menu Supprimer --> Item Cours" << endl;
     // TO DO (Etape 11)
+    Timetable::getInstance().deleteCourseById(dialogInputInt("Supprimer un cours", "Saissisez l'id du cours a supprimer"));
+    clearTableCourses();
+ 
+    auto tmp = Timetable::getInstance().getCourses();
+    for (auto it = tmp.cbegin(); it != tmp.cend(); ++it)
+    {
+        addTupleTableCourses(Timetable::getInstance().tuple(*it));
+    }
 
 }
 
@@ -841,4 +912,13 @@ void ApplicHoraireWindow::updateAllTables()
     }
  
     ui->lineEditNomLocal->clear();
+
+    /*MAJ cours*/
+    clearTableCourses();
+    auto cours = Timetable::getInstance().getCourses();
+    for (auto it = cours.cbegin(); it != cours.cend(); ++it)
+    {
+        addTupleTableCourses(Timetable::getInstance().tuple(*it));
+    }
+
 }
