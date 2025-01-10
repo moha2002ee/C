@@ -11,7 +11,7 @@ Event::Event()
     code = 0;
 
     // Allocation dynamique pour le titre avec une copie de "default".
-    title = new char[strlen("default") + 1];
+    title = new char[strlen("default") + 1]; 
     strcpy(title, "default");
 }
 

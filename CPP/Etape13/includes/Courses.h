@@ -21,7 +21,7 @@ namespace planning
         int professorId;
         int classroomId;
         set<int>groupsIds;
-
+      
     public:
         Course() = default;
         Course(int c, const char* t, int ProfId, int ClassroomId, set<int >groupsIds);

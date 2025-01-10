@@ -1,69 +1,66 @@
+.SILENT:
 
-all: Gerant Client Serveur CreationBD Publicite Caddie AccesBD
+OBS = g++ -Wno-unused-parameter -c -pipe -g -std=gnu++11 -Wall -W -D_REENTRANT -fPIC -DQT_DEPRECATED_WARNINGS -DQT_QML_DEBUG -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB -I../UNIX_DOSSIER_FINAL -I. -isystem /usr/include/qt5 -isystem /usr/include/qt5/QtWidgets -isystem /usr/include/qt5/QtGui -isystem /usr/include/qt5/QtCore -I. -I. -I/usr/lib64/qt5/mkspecs/linux-g++ -o
 
+OBS2 = g++ -Wno-unused-parameter -c -pipe -g -std=gnu++11 -Wall -W -D_REENTRANT -fPIC -DQT_DEPRECATED_WARNINGS -DQT_QML_DEBUG -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB -I../Administrateur -I. -isystem /usr/include/qt5 -isystem /usr/include/qt5/QtWidgets -isystem /usr/include/qt5/QtGui -isystem /usr/include/qt5/QtCore -I. -I. -I/usr/lib64/qt5/mkspecs/linux-g++
 
-maingerant.o: maingerant.cpp
-	@echo "Compilation de maingerant.cpp..."
-	@g++ -Wno-unused-parameter -c -pipe -g -std=gnu++11 -Wall -W -D_REENTRANT -fPIC -DQT_DEPRECATED_WARNINGS -DQT_QML_DEBUG -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB -I../Administrateur -I. -isystem /usr/include/qt5 -isystem /usr/include/qt5/QtWidgets -isystem /usr/include/qt5/QtGui -isystem /usr/include/qt5/QtCore -I. -I/usr/lib64/qt5/mkspecs/linux-g++ -o maingerant.o maingerant.cpp
+all:	AccesBD Caddie Publicite CreationBD Serveur Client Gerant
 
-windowgerant.o: windowgerant.cpp
-	@echo "Compilation de windowgerant.cpp..."
-	@g++ -Wno-unused-parameter -c -pipe -g -std=gnu++11 -Wall -W -D_REENTRANT -fPIC -DQT_DEPRECATED_WARNINGS -DQT_QML_DEBUG -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB -I../Administrateur -I. -isystem /usr/include/qt5 -isystem /usr/include/qt5/QtWidgets -isystem /usr/include/qt5/QtGui -isystem /usr/include/qt5/QtCore -I/usr/lib64/qt5/mkspecs/linux-g++ -I/usr/include/mysql -m64 -L/usr/lib64/mysql -o windowgerant.o windowgerant.cpp
+AccesBD:	AccesBD.cpp
+	echo "Creation du AccesBD"
+	g++ -o AccesBD AccesBD.cpp -I/usr/include/mysql -m64 -L/usr/lib64/mysql -lmysqlclient -lpthread -lz -lm -lrt -lssl -lcrypto -ldl
 
-moc_windowgerant.o: moc_windowgerant.cpp
-	@echo "Compilation de moc_windowgerant.cpp..."
-	@g++ -Wno-unused-parameter -c -pipe -g -std=gnu++11 -Wall -W -D_REENTRANT -fPIC -DQT_DEPRECATED_WARNINGS -DQT_QML_DEBUG -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB -I../Administrateur -I. -isystem /usr/include/qt5 -isystem /usr/include/qt5/QtWidgets -isystem /usr/include/qt5/QtGui -isystem /usr/include/qt5/QtCore -I/usr/lib64/qt5/mkspecs/linux-g++ -o moc_windowgerant.o moc_windowgerant.cpp
+Caddie:	Caddie.cpp
+	echo "Creation du Caddie"
+	g++ -o Caddie Caddie.cpp -I/usr/include/mysql -m64 -L/usr/lib64/mysql -lmysqlclient -lpthread -lz -lm -lrt -lssl -lcrypto -ldl
 
-Gerant: maingerant.o windowgerant.o moc_windowgerant.o
-	@echo "Compilation de Gerant..."
-	@g++ -Wno-unused-parameter -o Gerant maingerant.o windowgerant.o moc_windowgerant.o /usr/lib64/libQt5Widgets.so /usr/lib64/libQt5Gui.so /usr/lib64/libQt5Core.so /usr/lib64/libGL.so -L/usr/lib64/mysql -lmysqlclient -lpthread -lz -lm -lrt -lssl -lcrypto -ldl
+Publicite:	Publicite.cpp
+	echo "Creation du Publicite"
+	g++ -o Publicite Publicite.cpp
 
-mainclient.o: mainclient.cpp
-	@echo "Compilation de mainclient.cpp..."
-	@g++ -Wno-unused-parameter -c -pipe -g -std=gnu++11 -Wall -W -D_REENTRANT -fPIC -DQT_DEPRECATED_WARNINGS -DQT_QML_DEBUG -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB -I../UNIX_DOSSIER_FINAL -I. -isystem /usr/include/qt5 -isystem /usr/include/qt5/QtWidgets -isystem /usr/include/qt5/QtGui -isystem /usr/include/qt5/QtCore -I/usr/lib64/qt5/mkspecs/linux-g++ -o mainclient.o mainclient.cpp
+CreationBD:	CreationBD.cpp
+	echo "Creation du CreationBD"
+	g++ -o CreationBD CreationBD.cpp -I/usr/include/mysql -m64 -L/usr/lib64/mysql -lmysqlclient -lpthread -lz -lm -lrt -lssl -lcrypto -ldl
 
-windowclient.o: windowclient.cpp
-	@echo "Compilation de windowclient.cpp..."
-	@g++ -Wno-unused-parameter -c -pipe -g -std=gnu++11 -Wall -W -D_REENTRANT -fPIC -DQT_DEPRECATED_WARNINGS -DQT_QML_DEBUG -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB -I../UNIX_DOSSIER_FINAL -I. -isystem /usr/include/qt5 -isystem /usr/include/qt5/QtWidgets -isystem /usr/include/qt5/QtGui -isystem /usr/include/qt5/QtCore -I/usr/lib64/qt5/mkspecs/linux-g++ -o windowclient.o windowclient.cpp
+Serveur:	Serveur.cpp FichierClient.o
+	echo "Creation du Serveur"
+	g++ Serveur.cpp FichierClient.o -o Serveur -I/usr/include/mysql -m64 -L/usr/lib64/mysql -lmysqlclient -lpthread -lz -lm -lrt -lssl -lcrypto -ldl
 
-moc_windowclient.o: moc_windowclient.cpp
-	@echo "Compilation de moc_windowclient.cpp..."
-	@g++ -Wno-unused-parameter -c -pipe -g -std=gnu++11 -Wall -W -D_REENTRANT -fPIC -DQT_DEPRECATED_WARNINGS -DQT_QML_DEBUG -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB -I../UNIX_DOSSIER_FINAL -I. -isystem /usr/include/qt5 -isystem /usr/include/qt5/QtWidgets -isystem /usr/include/qt5/QtGui -isystem /usr/include/qt5/QtCore -I/usr/lib64/qt5/mkspecs/linux-g++ -o moc_windowclient.o moc_windowclient.cpp
-
-Client: mainclient.o windowclient.o moc_windowclient.o
-	@echo "Compilation de Client..."
-	@g++ -Wno-unused-parameter -o Client mainclient.o windowclient.o moc_windowclient.o /usr/lib64/libQt5Widgets.so /usr/lib64/libQt5Gui.so /usr/lib64/libQt5Core.so /usr/lib64/libGL.so -lpthread
-FichierClient.o: FichierClient.cpp FichierClient.h
-	@echo "Compilation de fichier client..."
+FichierClient.o:	FichierClient.cpp
+	echo "creation du FichierClient.o"
 	g++ -c FichierClient.cpp
 
+Client:	mainclient.o windowclient.o moc_windowclient.o
+	echo "Creation du Client"
+	g++ -Wno-unused-parameter -o Client mainclient.o windowclient.o moc_windowclient.o  /usr/lib64/libQt5Widgets.so /usr/lib64/libQt5Gui.so /usr/lib64/libQt5Core.so /usr/lib64/libGL.so -lpthread
 
+moc_windowclient.o:	moc_windowclient.cpp
+	echo "Creation du moc_windowclient.o"
+	$(OBS) moc_windowclient.o moc_windowclient.cpp
 
-# Serveur
-Serveur: Serveur.cpp FichierClient.o
-	@echo "Compilation de Serveur.cpp..."
-	@g++ Serveur.cpp  FichierClient.o -o Serveur -I/usr/include/mysql -m64 -L/usr/lib64/mysql -lmysqlclient -lpthread -lz -lm -lrt -lssl -lcrypto -ldl
+windowclient.o:	windowclient.cpp
+	echo "Creation du windowclient.o"
+	$(OBS) windowclient.o windowclient.cpp
 
+mainclient.o:	mainclient.cpp
+	echo "Creation du mainclient.o"
+	$(OBS) mainclient.o mainclient.cpp
 
+Gerant:	maingerant.o windowgerant.o moc_windowgerant.o
+	echo "Creation du Gerant"
+	g++ -Wno-unused-parameter -o Gerant maingerant.o windowgerant.o moc_windowgerant.o /usr/lib64/libQt5Widgets.so /usr/lib64/libQt5Gui.so /usr/lib64/libQt5Core.so /usr/lib64/libGL.so -L/usr/lib64/mysql -lmysqlclient -lpthread -lz -lm -lrt -lssl -lcrypto -ldl
 
+moc_windowgerant.o:	moc_windowgerant.cpp
+	echo "Creation du moc_windowgerant.o"
+	$(OBS2) -o moc_windowgerant.o moc_windowgerant.cpp
 
-# Autres programmes
-CreationBD: CreationBD.cpp
-	@echo "Compilation de CreationBD.cpp..."
-	@g++ -o CreationBD CreationBD.cpp -I/usr/include/mysql -m64 -L/usr/lib64/mysql -lmysqlclient -lpthread -lz -lm -lrt -lssl -lcrypto -ldl
+windowgerant.o:	windowgerant.cpp
+	echo "Creation du windowgerant.o"
+	$(OBS2) -I/usr/include/mysql -m64 -L/usr/lib64/mysql -o windowgerant.o windowgerant.cpp
 
-Publicite: Publicite.cpp
-	@echo "Compilation de Publicite.cpp..."
-	@g++ -o Publicite Publicite.cpp
-
-Caddie: Caddie.cpp
-	@echo "Compilation de Caddie.cpp..."
-	@g++ -o Caddie Caddie.cpp -I/usr/include/mysql -m64 -L/usr/lib64/mysql -lmysqlclient -lpthread -lz -lm -lrt -lssl -lcrypto -ldl
-
-AccesBD: AccesBD.cpp
-	@echo "Compilation de AccesBD.cpp..."
-	@g++ -o AccesBD AccesBD.cpp -I/usr/include/mysql -m64 -L/usr/lib64/mysql -lmysqlclient -lpthread -lz -lm -lrt -lssl -lcrypto -ldl
+maingerant.o:	maingerant.cpp
+	echo "Creation du maingerant.o"
+	$(OBS2) -o maingerant.o maingerant.cpp
 
 clean:
-	@echo "Clean de tout..."
-	@rm -f *.o Gerant Client Serveur CreationBD Publicite Caddie AccesBD
+	rm *.o

@@ -737,6 +737,25 @@ void ApplicHoraireWindow::on_pushButtonSelectionner_clicked()
 {
     cout << "Clic sur bouton Selectionner" << endl;
     // TO DO (Etape 13)
+    Timing sch ;
+    auto cours = Timetable::getInstance().getCourses();
+    for(auto it = cours.cbegin(); it != cours.cend();it++){
+
+    
+    if (isDayChecked()){
+        if ()
+        addTupleTableCourses(Timetable::getInstance());
+    }
+    if (isProfessorChecked()){
+
+    }
+    if (isGroupChecked()){
+
+    }
+    if (isClassroomChecked()){
+
+    }
+    }
     
 }
 
