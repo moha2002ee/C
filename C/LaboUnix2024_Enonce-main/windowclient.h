@@ -1,6 +1,6 @@
 #ifndef WINDOWCLIENT_H
 #define WINDOWCLIENT_H
-#include "protocole.h"
+
 #include <QMainWindow>
 
 QT_BEGIN_NAMESPACE
