@@ -1,208 +1,110 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include <string.h>
-#include <pthread.h>
+#include <stdio.h>    // Inclusion de la bibliothèque standard pour les entrées/sorties
+#include <stdlib.h>   // Inclusion de la bibliothèque pour les fonctions de gestion de mémoire
+#include <fcntl.h>    // Inclusion de la bibliothèque pour l'ouverture de fichiers
+#include <unistd.h>   // Inclusion de la bibliothèque pour la gestion des appels systèmes
+#include <string.h>   // Inclusion de la bibliothèque pour les fonctions sur les chaînes de caractères
+#include <pthread.h>  // Inclusion de la bibliothèque pour l'utilisation des threads (POSIX)
 
-void* OccurenceCountFile1(void* arg);
-void* OccurenceCountFile2(void* arg);
-void* OccurenceCountFile3(void* arg);
-void* OccurenceCountFile4(void* arg);
+void* compterOccurrencesDansFichier1(void* arg);
+void* compterOccurrencesDansFichier2(void* arg);
+void* compterOccurrencesDansFichier3(void* arg);
+void* compterOccurrencesDansFichier4(void* arg);
 
 int main() {
-    puts("Thread principal demarre");
+    pthread_t threads[4];  // Déclaration des threads
+    int resultat;
 
-    pthread_t pit1, pit2, pit3, pit4;
-    int resultat = pthread_create(&pit1, NULL, OccurenceCountFile1, NULL);
+    // Création des threads
+    resultat = pthread_create(&threads[0], NULL, compterOccurrencesDansFichier1, NULL);
     if (resultat != 0) {
-        printf("Erreur lors de la création du thread !\n");
+        printf("Erreur lors de la création du thread 1 !\n");
         return 1;
     }
-    puts("*");
 
-    resultat = pthread_create(&pit2, NULL, OccurenceCountFile2, NULL);
+    resultat = pthread_create(&threads[1], NULL, compterOccurrencesDansFichier2, NULL);
     if (resultat != 0) {
-        printf("Erreur lors de la création du thread !\n");
+        printf("Erreur lors de la création du thread 2 !\n");
         return 1;
     }
-    puts("  *");
 
-    resultat = pthread_create(&pit3, NULL, OccurenceCountFile3, NULL);
+    resultat = pthread_create(&threads[2], NULL, compterOccurrencesDansFichier3, NULL);
     if (resultat != 0) {
-        printf("Erreur lors de la création du thread !\n");
+        printf("Erreur lors de la création du thread 3 !\n");
         return 1;
     }
-    puts("      *");
 
-    resultat = pthread_create(&pit4, NULL, OccurenceCountFile4, NULL);
+    resultat = pthread_create(&threads[3], NULL, compterOccurrencesDansFichier4, NULL);
     if (resultat != 0) {
-        printf("Erreur lors de la création du thread !\n");
+        printf("Erreur lors de la création du thread 4 !\n");
         return 1;
     }
-    puts("          *");
 
-    puts("Attente de la fin du thread secondaire");
-    int* occurrence1;
-    pthread_join(pit1, (void**)&occurrence1);
+    // Attente de la fin des threads
+    for (int i = 0; i < 4; i++) {
+        pthread_join(threads[i], NULL);
+    }
 
-    puts("Attente de la fin du thread secondaire");
-    int* occurrence2;
-    pthread_join(pit2, (void**)&occurrence2);
+    printf("Le thread principal : tous les threads secondaires ont terminé.\n");
 
-    puts("Attente de la fin du thread secondaire");
-    int* occurrence3;
-    pthread_join(pit3, (void**)&occurrence3);
-
-    puts("Attente de la fin du thread secondaire");
-    int* occurrence4;
-    pthread_join(pit4, (void**)&occurrence4);
-
-    printf("Thread principal : le thread secondaire a terminé.\n");
-    printf("Le nombre d'occurrences de ce mot dans le texte 1 est : %d\n", *occurrence1);
-    printf("Le nombre d'occurrences de ce mot dans le texte 2 est : %d\n", *occurrence2);
-    printf("Le nombre d'occurrences de ce mot dans le texte 3 est : %d\n", *occurrence3);
-    printf("Le nombre d'occurrences de ce mot dans le texte 4 est : %d\n", *occurrence4);
-
-    free(occurrence1);
-    free(occurrence2);
-    free(occurrence3);
-    free(occurrence4);
     return 0;
 }
 
-void* OccurenceCountFile1(void* arg) {
-    int fp = open("text1", O_RDONLY);
-    if (fp == -1) {
+void* compterOccurrencesDansFichier1(void* arg) {
+    int descripteurFichier = open("text1", O_RDONLY);
+    if (descripteurFichier == -1) {
         printf("Erreur d'ouverture du fichier.\n");
-        return NULL;
+        return (void*)-1;
     }
 
-    printf("Entrez le mot que vous désirez trouver le nombre de ses occurrences dans le texte 1: ");
-    char mot[10];
-    scanf("%s", mot);
-    int cibleLonger = strlen(mot);
+    printf("*\n");
 
-    char lettre[1];
-    int occurence = 0;
-    int i = 0;
+    // Ajoutez ici le code pour compter les occurrences du mot dans le fichier
 
-    while (read(fp, lettre, 1) > 0) {
-        if (mot[i] == lettre[0]) {
-            i++;
-            if (i == cibleLonger) {
-                occurence++;
-                i = 0;
-            }
-        } else {
-            i = 0;
-        }
-    }
-
-    close(fp);
-    int* resultat = (int*)malloc(sizeof(int));  // Cast explicite ajouté ici
-    *resultat = occurence;
-    return resultat;
+    close(descripteurFichier);
+    return NULL;
 }
 
-void* OccurenceCountFile2(void* arg) {
-    int fp = open("text2", O_RDONLY);
-    if (fp == -1) {
+void* compterOccurrencesDansFichier2(void* arg) {
+    int descripteurFichier = open("text2", O_RDONLY);
+    if (descripteurFichier == -1) {
         printf("Erreur d'ouverture du fichier.\n");
-        return NULL;
+        return (void*)-1;
     }
 
-    printf("Entrez le mot que vous désirez trouver le nombre de ses occurrences dans le texte 2 : ");
-    char mot[10];
-    scanf("%s", mot);
-    int cibleLonger = strlen(mot);
+    printf("\t*\n");
 
-    char lettre[1];
-    int occurence = 0;
-    int i = 0;
+    // Ajoutez ici le code pour compter les occurrences du mot dans le fichier
 
-    while (read(fp, lettre, 1) > 0) {
-        if (mot[i] == lettre[0]) {
-            i++;
-            if (i == cibleLonger) {
-                occurence++;
-                i = 0;
-            }
-        } else {
-            i = 0;
-        }
-    }
-
-    close(fp);
-    int* resultat = (int*)malloc(sizeof(int));  // Cast explicite ajouté ici
-    *resultat = occurence;
-    return resultat;
+    close(descripteurFichier);
+    return NULL;
 }
 
-void* OccurenceCountFile3(void* arg) {
-    int fp = open("text3", O_RDONLY);
-    if (fp == -1) {
+void* compterOccurrencesDansFichier3(void* arg) {
+    int descripteurFichier = open("text3", O_RDONLY);
+    if (descripteurFichier == -1) {
         printf("Erreur d'ouverture du fichier.\n");
-        return NULL;
+        return (void*)-1;
     }
 
-    printf("Entrez le mot que vous désirez trouver le nombre de ses occurrences dans le texte 3: ");
-    char mot[10];
-    scanf("%s", mot);
-    int cibleLonger = strlen(mot);
+    printf("\t\t*\n");
 
-    char lettre[1];
-    int occurence = 0;
-    int i = 0;
+    // Ajoutez ici le code pour compter les occurrences du mot dans le fichier
 
-    while (read(fp, lettre, 1) > 0) {
-        if (mot[i] == lettre[0]) {
-            i++;
-            if (i == cibleLonger) {
-                occurence++;
-                i = 0;
-            }
-        } else {
-            i = 0;
-        }
-    }
-
-    close(fp);
-    int* resultat = (int*)malloc(sizeof(int));  // Cast explicite ajouté ici
-    *resultat = occurence;
-    return resultat;
+    close(descripteurFichier);
+    return NULL;
 }
 
-void* OccurenceCountFile4(void* arg) {
-    int fp = open("text4", O_RDONLY);
-    if (fp == -1) {
+void* compterOccurrencesDansFichier4(void* arg) {
+    int descripteurFichier = open("text4", O_RDONLY);
+    if (descripteurFichier == -1) {
         printf("Erreur d'ouverture du fichier.\n");
-        return NULL;
+        return (void*)-1;
     }
 
-    printf("Entrez le mot que vous désirez trouver le nombre de ses occurrences dans le texte 4: ");
-    char mot[10];
-    scanf("%s", mot);
-    int cibleLonger = strlen(mot);
+    printf("\t\t\t*\n");
 
-    char lettre[1];
-    int occurence = 0;
-    int i = 0;
+    // Ajoutez ici le code pour compter les occurrences du mot dans le fichier
 
-    while (read(fp, lettre, 1) > 0) {
-        if (mot[i] == lettre[0]) {
-            i++;
-            if (i == cibleLonger) {
-                occurence++;
-                i = 0;
-            }
-        } else {
-            i = 0;
-        }
-    }
-
-    close(fp);
-    int* resultat = (int*)malloc(sizeof(int));  // Cast explicite ajouté ici
-    *resultat = occurence;
-    return resultat;
+    close(descripteurFichier);
+    return NULL;
 }
