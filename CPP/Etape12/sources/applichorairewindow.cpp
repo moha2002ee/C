@@ -25,10 +25,10 @@ ApplicHoraireWindow::ApplicHoraireWindow(QWidget *parent) : QMainWindow(parent),
     ui->tableWidgetProfesseurs->setHorizontalHeaderLabels(labelsTableProfesseurs);
     ui->tableWidgetProfesseurs->setSelectionMode(QAbstractItemView::SingleSelection);
     ui->tableWidgetProfesseurs->setSelectionBehavior(QAbstractItemView::SelectRows);
-    ui->tableWidgetProfesseurs->horizontalHeader()->setVisible(true);
+    ui->tableWidgetProfesseurs->horizontalHeader()->setVisible(false);
     ui->tableWidgetProfesseurs->horizontalHeader()->setDefaultSectionSize(100);
     ui->tableWidgetProfesseurs->horizontalHeader()->setStretchLastSection(true);
-    ui->tableWidgetProfesseurs->verticalHeader()->setVisible(false);
+    ui->tableWidgetProfesseurs->verticalHeader()->setVisible(true);
     ui->tableWidgetProfesseurs->horizontalHeader()->setStyleSheet("background-color: lightyellow");
 
     // Configuration de la table des groupes
@@ -40,10 +40,10 @@ ApplicHoraireWindow::ApplicHoraireWindow(QWidget *parent) : QMainWindow(parent),
     ui->tableWidgetGroupes->setHorizontalHeaderLabels(labelsTableGroupes);
     ui->tableWidgetGroupes->setSelectionMode(QAbstractItemView::MultiSelection);
     ui->tableWidgetGroupes->setSelectionBehavior(QAbstractItemView::SelectRows);
-    ui->tableWidgetGroupes->horizontalHeader()->setVisible(true);
+    ui->tableWidgetGroupes->horizontalHeader()->setVisible(false);
     ui->tableWidgetGroupes->horizontalHeader()->setDefaultSectionSize(100);
     ui->tableWidgetGroupes->horizontalHeader()->setStretchLastSection(true);
-    ui->tableWidgetGroupes->verticalHeader()->setVisible(false);
+    ui->tableWidgetGroupes->verticalHeader()->setVisible(true);
     ui->tableWidgetGroupes->horizontalHeader()->setStyleSheet("background-color: lightyellow");
 
     // Configuration de la table des locaux
@@ -55,10 +55,10 @@ ApplicHoraireWindow::ApplicHoraireWindow(QWidget *parent) : QMainWindow(parent),
     ui->tableWidgetLocaux->setHorizontalHeaderLabels(labelsTableLocaux);
     ui->tableWidgetLocaux->setSelectionMode(QAbstractItemView::SingleSelection);
     ui->tableWidgetLocaux->setSelectionBehavior(QAbstractItemView::SelectRows);
-    ui->tableWidgetLocaux->horizontalHeader()->setVisible(true);
+    ui->tableWidgetLocaux->horizontalHeader()->setVisible(false);
     ui->tableWidgetLocaux->horizontalHeader()->setDefaultSectionSize(100);
     ui->tableWidgetLocaux->horizontalHeader()->setStretchLastSection(true);
-    ui->tableWidgetLocaux->verticalHeader()->setVisible(false);
+    ui->tableWidgetLocaux->verticalHeader()->setVisible(true);
     ui->tableWidgetLocaux->horizontalHeader()->setStyleSheet("background-color: lightyellow");
 
     // Configuration de la table des cours
@@ -76,10 +76,10 @@ ApplicHoraireWindow::ApplicHoraireWindow(QWidget *parent) : QMainWindow(parent),
     ui->tableWidgetCourss->setHorizontalHeaderLabels(labelsTableCourss);
     ui->tableWidgetCourss->setSelectionMode(QAbstractItemView::NoSelection);
     //ui->tableWidgetCourss->setSelectionBehavior(QAbstractItemView::SelectRows);
-    ui->tableWidgetCourss->horizontalHeader()->setVisible(true);
+    ui->tableWidgetCourss->horizontalHeader()->setVisible(false);
     ui->tableWidgetCourss->horizontalHeader()->setDefaultSectionSize(100);
     ui->tableWidgetCourss->horizontalHeader()->setStretchLastSection(true);
-    ui->tableWidgetCourss->verticalHeader()->setVisible(false);
+    ui->tableWidgetCourss->verticalHeader()->setVisible(true);
     ui->tableWidgetCourss->horizontalHeader()->setStyleSheet("background-color: lightyellow");
 
     // Pour faire joli
