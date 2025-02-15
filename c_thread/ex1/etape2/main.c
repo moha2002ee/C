@@ -1,110 +1,162 @@
-#include <stdio.h>    // Inclusion de la bibliothèque standard pour les entrées/sorties
-#include <stdlib.h>   // Inclusion de la bibliothèque pour les fonctions de gestion de mémoire
-#include <fcntl.h>    // Inclusion de la bibliothèque pour l'ouverture de fichiers
-#include <unistd.h>   // Inclusion de la bibliothèque pour la gestion des appels systèmes
-#include <string.h>   // Inclusion de la bibliothèque pour les fonctions sur les chaînes de caractères
-#include <pthread.h>  // Inclusion de la bibliothèque pour l'utilisation des threads (POSIX)
+#include <stdio.h>  // Inclusion des bibliothèques nécessaires
+#include <stdlib.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <string.h>
+#include <pthread.h>
 
-void* compterOccurrencesDansFichier1(void* arg);
-void* compterOccurrencesDansFichier2(void* arg);
-void* compterOccurrencesDansFichier3(void* arg);
-void* compterOccurrencesDansFichier4(void* arg);
+void *occurencesT1(void *arg);
+void *occurencesT2(void *arg);
+void *occurencesT3(void *arg);
+void *occurencesT4(void *arg);
 
 int main() {
-    pthread_t threads[4];  // Déclaration des threads
-    int resultat;
+    pthread_t thread1, thread2, thread3, thread4;  
+    int* resultat1;
+    int* resultat2;
+    int* resultat3;
+    int* resultat4;
 
-    // Création des threads
-    resultat = pthread_create(&threads[0], NULL, compterOccurrencesDansFichier1, NULL);
-    if (resultat != 0) {
-        printf("Erreur lors de la création du thread 1 !\n");
+    if (pthread_create(&thread1, NULL, occurencesT1, NULL) != 0) {
+        perror("Erreur lors de la création du thread");
+        return 1;
+    }
+    if (pthread_create(&thread2, NULL, occurencesT2, NULL) != 0) {
+        perror("Erreur lors de la création du thread");
+        return 1;
+    }
+    if (pthread_create(&thread3, NULL, occurencesT3, NULL) != 0) {
+        perror("Erreur lors de la création du thread");
+        return 1;
+    }
+    if (pthread_create(&thread4, NULL, occurencesT4, NULL) != 0) {
+        perror("Erreur lors de la création du thread");
         return 1;
     }
 
-    resultat = pthread_create(&threads[1], NULL, compterOccurrencesDansFichier2, NULL);
-    if (resultat != 0) {
-        printf("Erreur lors de la création du thread 2 !\n");
+    if (pthread_join(thread1, (void**)&resultat1) != 0) {
+        perror("Erreur lors de la jointure du thread");
+        return 1;
+    }
+    if (pthread_join(thread2, (void**)&resultat2) != 0) {
+        perror("Erreur lors de la jointure du thread");
+        return 1;
+    }
+    if (pthread_join(thread3, (void**)&resultat3) != 0) {
+        perror("Erreur lors de la jointure du thread");
+        return 1;
+    }
+    if (pthread_join(thread4, (void**)&resultat4) != 0) {
+        perror("Erreur lors de la jointure du thread");
         return 1;
     }
 
-    resultat = pthread_create(&threads[2], NULL, compterOccurrencesDansFichier3, NULL);
-    if (resultat != 0) {
-        printf("Erreur lors de la création du thread 3 !\n");
-        return 1;
-    }
+    printf("Occurrences trouvées:\n");
+    printf("Thread 1: %d\n", *resultat1);
+    printf("Thread 2: %d\n", *resultat2);
+    printf("Thread 3: %d\n", *resultat3);
+    printf("Thread 4: %d\n", *resultat4);
 
-    resultat = pthread_create(&threads[3], NULL, compterOccurrencesDansFichier4, NULL);
-    if (resultat != 0) {
-        printf("Erreur lors de la création du thread 4 !\n");
-        return 1;
-    }
-
-    // Attente de la fin des threads
-    for (int i = 0; i < 4; i++) {
-        pthread_join(threads[i], NULL);
-    }
-
-    printf("Le thread principal : tous les threads secondaires ont terminé.\n");
+    free(resultat1);
+    free(resultat2);
+    free(resultat3);
+    free(resultat4);
 
     return 0;
 }
 
-void* compterOccurrencesDansFichier1(void* arg) {
-    int descripteurFichier = open("text1", O_RDONLY);
-    if (descripteurFichier == -1) {
-        printf("Erreur d'ouverture du fichier.\n");
-        return (void*)-1;
+void *occurencesT1(void *arg) {
+    const char *filename = "text1.txt";
+    const char *word = "maison";
+    FILE *file = fopen(filename, "r");
+    if (file == NULL) {
+        perror("Erreur lors de l'ouverture du fichier");
+        pthread_exit(NULL);
     }
 
+    int count = 0;
+    char buffer[256];
+    while (fscanf(file, "%255s", buffer) == 1) {
+        if (strstr(buffer, word) != NULL) {
+            count++;
+        }
+    }
     printf("*\n");
+    fclose(file);
 
-    // Ajoutez ici le code pour compter les occurrences du mot dans le fichier
-
-    close(descripteurFichier);
-    return NULL;
+    int *result = (int*)malloc(sizeof(int));
+    *result = count;
+    pthread_exit(result);
 }
 
-void* compterOccurrencesDansFichier2(void* arg) {
-    int descripteurFichier = open("text2", O_RDONLY);
-    if (descripteurFichier == -1) {
-        printf("Erreur d'ouverture du fichier.\n");
-        return (void*)-1;
+void *occurencesT2(void *arg) {
+    const char *filename = "text1.txt";
+    const char *word = "voiture";
+    FILE *file = fopen(filename, "r");
+    if (file == NULL) {
+        perror("Erreur lors de l'ouverture du fichier");
+        pthread_exit(NULL);
     }
 
+    int count = 0;
+    char buffer[256];
+    while (fscanf(file, "%255s", buffer) == 1) {
+        if (strstr(buffer, word) != NULL) {
+            count++;
+        }
+    }
     printf("\t*\n");
+    fclose(file);
 
-    // Ajoutez ici le code pour compter les occurrences du mot dans le fichier
-
-    close(descripteurFichier);
-    return NULL;
+    int *result = (int*)malloc(sizeof(int));
+    *result = count;
+    pthread_exit(result);
 }
 
-void* compterOccurrencesDansFichier3(void* arg) {
-    int descripteurFichier = open("text3", O_RDONLY);
-    if (descripteurFichier == -1) {
-        printf("Erreur d'ouverture du fichier.\n");
-        return (void*)-1;
+void *occurencesT3(void *arg) {
+    const char *filename = "text1.txt";
+    const char *word = "ordinateur";
+    FILE *file = fopen(filename, "r");
+    if (file == NULL) {
+        perror("Erreur lors de l'ouverture du fichier");
+        pthread_exit(NULL);
     }
 
+    int count = 0;
+    char buffer[256];
+    while (fscanf(file, "%255s", buffer) == 1) {
+        if (strstr(buffer, word) != NULL) {
+            count++;
+        }
+    }
     printf("\t\t*\n");
+    fclose(file);
 
-    // Ajoutez ici le code pour compter les occurrences du mot dans le fichier
-
-    close(descripteurFichier);
-    return NULL;
+    int *result = (int*)malloc(sizeof(int));
+    *result = count;
+    pthread_exit(result);
 }
 
-void* compterOccurrencesDansFichier4(void* arg) {
-    int descripteurFichier = open("text4", O_RDONLY);
-    if (descripteurFichier == -1) {
-        printf("Erreur d'ouverture du fichier.\n");
-        return (void*)-1;
+void *occurencesT4(void *arg) {
+    const char *filename = "text1.txt";
+    const char *word = "telephone";
+    FILE *file = fopen(filename, "r");
+    if (file == NULL) {
+        perror("Erreur lors de l'ouverture du fichier");
+        pthread_exit(NULL);
     }
 
+    int count = 0;
+    char buffer[256];
+    while (fscanf(file, "%255s", buffer) == 1) {
+        if (strstr(buffer, word) != NULL) {
+            count++;
+        }
+    }
     printf("\t\t\t*\n");
+    fclose(file);
 
-    // Ajoutez ici le code pour compter les occurrences du mot dans le fichier
-
-    close(descripteurFichier);
-    return NULL;
+    int *result = (int*)malloc(sizeof(int));
+    *result = count;
+    pthread_exit(result);
 }
