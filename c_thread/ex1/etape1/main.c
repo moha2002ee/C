@@ -18,13 +18,13 @@ void* compter_occurrences(void* arg) {
     int fichier = open(CHEMIN_FICHIER, O_RDONLY);
     if (fichier == -1) {  // Vérifie si l'ouverture du fichier a échoué
         perror("Erreur lors de l'ouverture du fichier");
-        pthread_exit(NULL);
+        pthread_exit(NULL);  
     }
 
     ssize_t octets_lus;
     // Boucle pour lire le fichier par morceaux de la taille du mot cible
     while ((octets_lus = read(fichier, tampon, LONGUEUR_MOT)) == LONGUEUR_MOT) {
-        tampon[LONGUEUR_MOT] = '\0';  // Ajoute un caractère de fin de chaîne
+      tampon[LONGUEUR_MOT] = '\0';  // Ajoute un caractère de fin de chaîne
         if (strcmp(tampon, MOT_CIBLE) == 0) {  // Compare avec le mot cible
             compteur++;  // Incrémente le compteur si une occurrence est trouvée
         }
