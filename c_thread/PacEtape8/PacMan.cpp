@@ -11,13 +11,7 @@
 // Dimensions de la grille de jeu
 #define NB_LIGNE 21   // Nombre de lignes de la grille
 #define NB_COLONNE 17 // Nombre de colonnes de la grille
-#define VERIFIER_THREAD(tid) \
-  if (tid != 0)              \
-  {                          \
-    pthread_cancel(tid);     \
-    pthread_join(tid, NULL); \
-    tid = 0;                 \
-  } // Vérifie si le thread est actif et l'annule
+
 
 // Macros utilisées dans le tableau tab
 #define VIDE 0        // Case vide
@@ -74,7 +68,7 @@ int nbRouge = 0;                                             // Nombre de fantô
 int nbVert = 0;                                              // Nombre de fantômes verts
 int nbMauve = 0;                                             // Nombre de fantômes mauves
 int nbOrange = 0;                                            // Nombre de fantômes oranges
-bool gameOver = true;                                        // Indicateur de fin de jeu
+bool JeuFini = true;                                        // Indicateur de fin de jeu
 pthread_mutex_t mutexVies = PTHREAD_MUTEX_INITIALIZER;       // Mutex pour les vies
 pthread_mutex_t mutexNbFantomes = PTHREAD_MUTEX_INITIALIZER; // Mutex pour le nombre de fantômes
 pthread_cond_t condNbFantomes = PTHREAD_COND_INITIALIZER;    // Condition pour le nombre de fantômes
@@ -83,7 +77,7 @@ pthread_mutex_t mutexNbPacGom = PTHREAD_MUTEX_INITIALIZER;   // Mutex pour le no
 pthread_mutex_t mutexScore = PTHREAD_MUTEX_INITIALIZER;      // Mutex pour le score
 pthread_cond_t condNbPacGom = PTHREAD_COND_INITIALIZER;      // Condition pour le nombre de pac-goms
 pthread_cond_t condScore = PTHREAD_COND_INITIALIZER;         // Condition pour le score
-pthread_mutex_t mutexGameOver = PTHREAD_MUTEX_INITIALIZER;   // Mutex pour la fin de jeu
+pthread_mutex_t mutexJeuFini = PTHREAD_MUTEX_INITIALIZER;   // Mutex pour la fin de jeu
 pthread_key_t fantome_key;                                   // Clé spécifique pour les fantômes
 
 /////////////////////
@@ -100,7 +94,6 @@ void *Vies(void *arg);                                             // Fonction p
 void DessineGrilleBase();                                          // Fonction pour dessiner la grille de base
 void Attente(int milli);                                           // Fonction pour attendre un certain temps en millisecondes
 void setTab(int l, int c, int presence = VIDE, pthread_t tid = 0); // Fonction pour mettre à jour le tableau tab
-void DeplacePacMan(int direction);                                 // Fonction pour déplacer Pac-Man
 void handler_SIGINT(int sig);                                      // Gestionnaire pour le signal SIGINT
 void handler_SIGHUP(int sig);                                      // Gestionnaire pour le signal SIGHUP
 void handler_SIGUSR1(int sig);                                     // Gestionnaire pour le signal SIGUSR1
@@ -238,7 +231,7 @@ void *PacMan(void *arg)
   sigset_t mask, oldmask; // Déclare des masques de signaux
   printf("[DEBUG] Démarrage du thread PacMan\n");
 
-  while (gameOver) // Boucle infinie pour déplacer Pac-Man
+  while (JeuFini) // Boucle infinie pour déplacer Pac-Man
   {
     printf("[DEBUG] Pac-Man en mouvement - Position: (%d, %d)\n", L, C);
     // Bloquer les signaux pendant l'attente
@@ -339,7 +332,7 @@ void *PacMan(void *arg)
     pthread_mutex_unlock(&mutexTab); // Déverrouille le mutex
 
     // Vérifie si le jeu est terminé
-    if (!gameOver)
+    if (!JeuFini)
     {
       pthread_exit(NULL); // Termine le thread si le jeu est terminé
     }
@@ -360,11 +353,7 @@ void *Event(void *arg)
     if (event.type == CROIX) // Si l'événement est de type CROIX (fermeture de la fenêtre)
     {
       ok = 1;                              // Mettre à jour la variable de contrôle pour sortir de la boucle
-      pthread_cancel(tidPacGom);           // Annuler le thread PacGom
-      pthread_cancel(tidCompteurFantomes); // Annuler le thread CompteurFantomes
-      pthread_cancel(tidScore);            // Annuler le thread Score
-      pthread_cancel(tidBonus);            // Annuler le thread Bonus
-      pthread_cancel(tidPacMan);           // Annuler le thread PacMan
+      JeuFini = false;
       pthread_exit(NULL);                  // Terminer le thread Event
     }
     if (event.type == CLAVIER) // Si l'événement est de type CLAVIER (appui sur une touche)
@@ -373,6 +362,7 @@ void *Event(void *arg)
       {
       case 'q': // Si la touche 'q' est pressée
         ok = 1; // Mettre à jour la variable de contrôle pour sortir de la boucle
+        JeuFini = false;
         break;
       case KEY_RIGHT:                    // Si la touche flèche droite est pressée
         printf("Fleche droite !\n");     // Afficher un message
@@ -419,48 +409,14 @@ void handler_SIGUSR2(int sig)
 }
 
 //*********************************************************************************************
-void DeplacePacMan(int direction)
-{
-  pthread_mutex_lock(&mutexTab); // Verrouille le mutex pour accéder au tableau
 
-  // Efface l'ancienne position de Pac-Man
-  EffaceCarre(L, C);  // Efface le carré à la position actuelle de Pac-Man
-  setTab(L, C, VIDE); // Met à jour la case pour indiquer qu'elle est vide
-
-  // Met à jour la position de Pac-Man en fonction de la direction
-  switch (direction)
-  {
-  case GAUCHE:
-    if (tab[L][C - 1].presence != MUR) // Vérifie si la case à gauche n'est pas un mur
-      C--;                             // Déplace Pac-Man vers la gauche
-    break;
-  case DROITE:
-    if (tab[L][C + 1].presence != MUR) // Vérifie si la case à droite n'est pas un mur
-      C++;                             // Déplace Pac-Man vers la droite
-    break;
-  case HAUT:
-    if (tab[L - 1][C].presence != MUR) // Vérifie si la case en haut n'est pas un mur
-      L--;                             // Déplace Pac-Man vers le haut
-    break;
-  case BAS:
-    if (tab[L + 1][C].presence != MUR) // Vérifie si la case en bas n'est pas un mur
-      L++;                             // Déplace Pac-Man vers le bas
-    break;
-  }
-
-  // Dessine Pac-Man à la nouvelle position
-  DessinePacMan(L, C, direction); // Dessine Pac-Man à la nouvelle position
-  setTab(L, C, PACMAN);           // Met à jour la case pour indiquer la présence de Pac-Man
-
-  pthread_mutex_unlock(&mutexTab); // Déverrouille le mutex
-}
 
 //*********************************************************************************************
 void *PacGom(void *arg)
 {
   DessineChiffre(14, 22, niveau); // Dessine le chiffre du niveau
 
-  while (1) // Boucle infinie pour gérer les pac-goms
+  while (JeuFini) // Boucle infinie pour gérer les pac-goms
   {
     pthread_mutex_lock(&mutexTab); // Verrouille le mutex pour accéder au tableau
     nbPacGom = 0;                  // Réinitialise le nombre de pac-goms
@@ -478,10 +434,11 @@ void *PacGom(void *arg)
           setTab(l, c, PACGOM); // Met à jour la case pour indiquer la présence d'un pac-gom
           DessinePacGom(l, c);  // Dessine un pac-gom à cette position
           nbPacGom++;           // Incrémente le nombre de pac-goms
+          
         }
       }
     }
-
+    
     // Placer les super pac-goms
     setTab(2, 1, SUPERPACGOM);   // Place un super pac-gom à la position (2, 1)
     DessineSuperPacGom(2, 1);    // Dessine un super pac-gom à cette position
@@ -491,14 +448,15 @@ void *PacGom(void *arg)
     DessineSuperPacGom(15, 1);   // Dessine un super pac-gom à cette position
     setTab(15, 15, SUPERPACGOM); // Place un super pac-gom à la position (15, 15)
     DessineSuperPacGom(15, 15);  // Dessine un super pac-gom à cette position
-    nbPacGom += 4;               // Incrémente le nombre de pac-goms de 4
+    nbPacGom += 2;               // Incrémente le nombre de pac-goms de 4
 
     pthread_mutex_unlock(&mutexTab); // Déverrouille le mutex
 
     // Attendre que tous les pac-goms soient mangés
     pthread_mutex_lock(&mutexNbPacGom); // Verrouille le mutex pour accéder au nombre de pac-goms
-    while (nbPacGom > 0)                // Boucle tant qu'il reste des pac-goms
+    while (nbPacGom != 0)                // Boucle tant qu'il reste des pac-goms
     {
+
       pthread_cond_wait(&condNbPacGom, &mutexNbPacGom); // Attend la condition de changement du nombre de pac-goms
       DessineChiffre(12, 22, nbPacGom / 100);           // Dessine le chiffre des centaines du nombre de pac-goms
       DessineChiffre(12, 23, (nbPacGom / 10) % 10);     // Dessine le chiffre des dizaines du nombre de pac-goms
@@ -522,7 +480,7 @@ void *PacGom(void *arg)
 //*********************************************************************************************
 void *Score(void *arg)
 {
-  while (1) // Boucle infinie pour gérer le score
+  while (JeuFini) // Boucle infinie pour gérer le score
   {
     pthread_mutex_lock(&mutexScore); // Verrouille le mutex pour accéder au score
     while (!MAJScore)                // Boucle tant que le score n'a pas besoin d'être mis à jour
@@ -546,7 +504,7 @@ void *Score(void *arg)
 //*********************************************************************************************
 void *Bonus(void *arg)
 {
-  while (1) // Boucle infinie pour gérer les bonus
+  while (JeuFini) // Boucle infinie pour gérer les bonus
   {
     // Attente d'un laps de temps aléatoire entre 10 et 20 secondes
     int waitTime = 10000 + rand() % 10000; // Calcule un temps d'attente aléatoire entre 10 et 20 secondes
@@ -609,7 +567,7 @@ void *Fantome(void *arg) {
   DessineFantome(fantome->L, fantome->C, fantome->couleur, dir); // Dessine le fantôme sur la grille
   pthread_mutex_unlock(&mutexTab);
 
-  while (gameOver) {
+  while (JeuFini) {
       int newL = fantome->L, newC = fantome->C; // Initialise les nouvelles coordonnées du fantôme
       switch (dir) {
           case HAUT: newL--; break;
@@ -681,7 +639,7 @@ void *Fantome(void *arg) {
 }
 
 void *CompteurFantome(void *arg) {
-  while (gameOver) {
+  while (JeuFini) {
       pthread_mutex_lock(&mutexNbFantomes);
       while (nbRouge == 2 && nbVert == 2 && nbMauve == 2 && nbOrange == 2) {
           pthread_cond_wait(&condNbFantomes, &mutexNbFantomes);
@@ -757,7 +715,7 @@ void *Vies(void *arg)
   printf("[DEBUG] Plus de vies, fin du jeu - Annulation des threads...\n");
   DessineChiffre(18, 22, vies);
 
-  gameOver = false;
+  JeuFini = false;
   printf("[DEBUG] Annulation des threads en cours...\n");
 
   pthread_cancel(tidPacGom);
